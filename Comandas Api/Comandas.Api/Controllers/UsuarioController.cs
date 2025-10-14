@@ -79,8 +79,19 @@ namespace Comandas.Api.Controllers
 
         // PUT api/<UsuarioController>/5
         [HttpPut("{id}")]
-        public void Put(int id, [FromBody] usuarioUpdateRequest usuarioUpdate)
+        public IResult Put(int id, [FromBody] usuarioUpdateRequest usuarioUpdate)
         {
+            //busca o usuario na lista pelo id
+            var usuario = usuarios.FirstOrDefault(u => u.Id == id);
+            //se nao encontrar retorna not found
+            if (usuario is null)
+                return Results.NotFound($"Usuario do id {id} não encontrado");
+            //atualiza o usuario
+            usuario.Nome = usuarioUpdate.Nome;
+            usuario.Email = usuarioUpdate.Email;
+            usuario.Senha = usuarioUpdate.Senha;
+            //retorna o content
+            return Results.NoContent();
         }
 
         // DELETE api/<UsuarioController>/5

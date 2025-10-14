@@ -52,14 +52,40 @@ namespace Comandas.Api.Controllers
 
         // POST api/<CardapioItemController>
         [HttpPost]
-        public void Post([FromBody] CardapioItemCreateRequest cardapio)
+        public IResult  Post([FromBody] CardapioItemCreateRequest cardapio)
         {
+            if (cardapio.Descricao.Length < 5)
+                return Results.BadRequest("A descrição deve ter no mínimo 5 caracteres.");
+            if (cardapio.Preco <= 0)
+                return Results.BadRequest("O preço deve ser maior que zero.");
+            if (cardapio.Titulo.Length < 3)
+                return Results.BadRequest("O título deve ter no mínimo 3 caracteres.");
+            var cardapioItem = new CardapioItem
+            {
+                Id = cardapios.Count + 1,
+                Titulo = cardapio.Titulo,
+                Descricao = cardapio.Descricao,
+                Preco = cardapio.Preco,
+                PossuiPreparo = cardapio.PossuiPreparo
+            };
+            //adiciona o cardapio na lista
+            cardapios.Add(cardapioItem);
+            return Results.Created($"/api/cardapio/{cardapioItem.Id}", cardapioItem);
         }
 
         // PUT api/<CardapioItemController>/5
         [HttpPut("{id}")]
-        public void Put(int id, [FromBody] CardapioItemUpdateRequest cardapio)
+        public IResult Put(int id, [FromBody] CardapioItemUpdateRequest cardapio)
         {
+            var cardapioItem = cardapios.FirstOrDefault(c => c.Id == id);
+
+            if (cardapioItem is null)
+                return Results.NotFound("Cardapio não encontrado");
+            cardapioItem.Titulo = cardapio.Titulo;
+            cardapioItem.Descricao = cardapio.Descricao;
+            cardapioItem.Preco = cardapio.Preco;
+            cardapioItem.PossuiPreparo = cardapio.PossuiPreparo;
+            return Results.Ok(cardapio);
         }
 
         // DELETE api/<CardapioItemController>/5
