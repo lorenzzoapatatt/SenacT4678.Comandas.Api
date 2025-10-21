@@ -10,19 +10,37 @@ namespace Comandas.Api.Controllers
     [ApiController]
     public class ComandaController : ControllerBase
     {
-        List<Comanda> comandas = new List<Comanda>()
+        static List<Comanda> comandas = new List<Comanda>()
         {
             new Comanda
             {
                 Id = 1,
                 NomeCliente = "Lorenzzo Patatt",
-                NumeroMesa = 1
+                NumeroMesa = 1,
+                Itens = new List<ComandaItem>
+                {
+                    new ComandaItem
+                    {
+                        Id = 1,
+                        ComandaId = 1,
+                        CardapioItemId = 1
+                    }
+                }
             },
             new Comanda
             {
                 Id = 2,
                 NomeCliente = "Maria Silva",
-                NumeroMesa = 2
+                NumeroMesa = 2,
+                Itens = new List<ComandaItem>
+                {
+                    new ComandaItem
+                    {
+                        Id = 2,
+                        ComandaId = 2,
+                        CardapioItemId = 2
+                    }
+                }
             }
         };
         // GET: api/<ComandaController>
@@ -58,20 +76,58 @@ namespace Comandas.Api.Controllers
                 NomeCliente = comandaCreate.NomeCliente,
                 NumeroMesa = comandaCreate.NumeroMesa
             };
+            // cria uma variavel do tipo lista de itens
+            var comandaItens = new List<ComandaItem>();
+            // percorre os ids dos itens do cardapio
+            foreach (int cardapioItemId in comandaCreate.CardapioItens)
+            {
+                // cria um novo item de comanda
+                var comandaItem = new ComandaItem
+                {
+                    Id = comandaItens.Count + 1,
+                    ComandaId = novaComanda.Id,
+                    CardapioItemId = cardapioItemId
+                };
+                // adiciona o item na lista de itens
+                comandaItens.Add(comandaItem);
+            }
+            // atribui os itens do cardapio a comanda
+            novaComanda.Itens = comandaItens;
+            // adiciona a nova comanda na lista de comandas
             comandas.Add(novaComanda);
             return Results.Created($"/api/comanda/{novaComanda.Id}", novaComanda);
         }
 
         // PUT api/<ComandaController>/5
         [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
+        public IResult Put(int id, [FromBody] comandaUpdateRequest comandaUpdate)
         {
+            var comanda = comandas.FirstOrDefault(c => c.Id == id);
+            if (comanda is null)
+            {
+                // 404
+                return Results.NotFound("comanda não encontrada");
+            }
+            // atualiza os dados da comanda
+            comanda.NomeCliente = comandaUpdate.NomeCliente;
+            comanda.NumeroMesa = comandaUpdate.NumeroMesa;
+
+            // retorna 204 sem conteudo
+            return Results.NoContent();
         }
 
         // DELETE api/<ComandaController>/5
         [HttpDelete("{id}")]
-        public void Delete(int id)
+        public IResult Delete(int id)
         {
+            var comanda = comandas.FirstOrDefault(c => c.Id == id);
+                if (comanda is null)
+                return Results.NotFound("Comanda não encontrada");
+            var remover = comandas.Remove(comanda);
+
+            if (remover)
+                return Results.NoContent();
+            return Results.StatusCode(500);
         }
     }
 }
