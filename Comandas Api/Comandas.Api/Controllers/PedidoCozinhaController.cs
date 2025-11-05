@@ -9,31 +9,29 @@ namespace Comandas.Api.Controllers
     [ApiController]
     public class PedidoCozinhaController : ControllerBase
     {
-        static List<PedidoCozinha> pedidos = new List<PedidoCozinha>()
+        public ComandasDbContext _context { get; set; }
+        public PedidoCozinhaController(ComandasDbContext context)
         {
-            new PedidoCozinha
-            {
-                Id = 1,
-                ComandaId = 1,
-            },
-            new PedidoCozinha
-            {
-                Id = 2,
-                ComandaId = 2,
-            }
-        };
+            _context = context;
+        }
         // GET: api/<PedidoCozinhaController>
         [HttpGet]
         public IResult Get()
         {
-            return Results.Ok(pedidos);
+            var comandas = _context.Comandas.ToList();
+            return Results.Ok(comandas);
         }
 
         // GET api/<PedidoCozinhaController>/5
         [HttpGet("{id}")]
-        public string Get(int id)
+        public IResult Get(int id)
         {
-            return "value";
+            var comanda = _context.Comandas.FirstOrDefault(c => c.Id == id);
+            if (comanda is null)
+            {
+                return Results.NotFound();
+            }
+            return Results.Ok(comanda);
         }
 
         // POST api/<PedidoCozinhaController>

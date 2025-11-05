@@ -7,7 +7,6 @@ namespace Comandas.Api.Models
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-
         public int Id { get; set; }
         public int NumeroMesa { get; set; }
         public string NomeCliente { get; set; } = default!;
