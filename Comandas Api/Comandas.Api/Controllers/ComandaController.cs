@@ -56,7 +56,6 @@ namespace Comandas.Api.Controllers
                 // cria um novo item de comanda
                 var comandaItem = new ComandaItem
                 {
-                    Id = comandaItens.Count + 1,
                     ComandaId = novaComanda.Id,
                     CardapioItemId = cardapioItemId
                 };
@@ -65,10 +64,9 @@ namespace Comandas.Api.Controllers
 
                 var cardapioItem = _context.CardapioItens.FirstOrDefault(ci => ci.Id == cardapioItemId);
 
-                if (cardapioItem!.PossuiPreparo)
-                {
+                //if (cardapioItem!.PossuiPreparo)
                     var pedido = new PedidoCozinha
-                    {
+                    {   
                         Comanda = novaComanda
                     };
                     var pedidoItem = new PedidoCozinhaItem
@@ -78,18 +76,26 @@ namespace Comandas.Api.Controllers
                     };
                     _context.pedidoCozinhas.Add(pedido);
                     _context.PedidoCozinhaItems.Add(pedidoItem);
-                }
-                novaComanda.Itens = comandaItens;
-                _context.Comandas.Add(novaComanda);
-                _context.SaveChanges();
-                return Results.Created($"/api/comanda/{novaComanda.Id}", novaComanda);
             }
             // atribui os itens do cardapio a comanda
             novaComanda.Itens = comandaItens;
             // adiciona a nova comanda na lista de comandas
             _context.Comandas.Add(novaComanda);
+            _context.ComandaItens.AddRange(comandaItens);
             _context.SaveChanges();
-            return Results.Created($"/api/comanda/{novaComanda.Id}", novaComanda);
+
+            var resposta = new ComandaCreateResponse
+            {
+                Id = novaComanda.Id,
+                NomeCliente = novaComanda.NomeCliente,
+                NumeroMesa = novaComanda.NumeroMesa,
+                Itens = novaComanda.Itens.Select(i => new ComandaItemResponse
+                {
+                    Id = i.Id,
+                    Titulo = _context.CardapioItens.First(ci => ci.Id == i.CardapioItemId).Titulo
+                }).ToList()
+            };
+            return Results.Created($"/api/comanda/{resposta.Id}", resposta);
         }
 
         // PUT api/<ComandaController>/5

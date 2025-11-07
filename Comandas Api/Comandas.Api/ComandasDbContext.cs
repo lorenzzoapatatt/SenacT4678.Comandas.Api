@@ -26,9 +26,21 @@ namespace Comandas.Api
                 .HasData(
                     new Models.Mesa
                     {
-                        Id = 2,
+                        Id = 1,
                         NumeroMesa = 1,
                         SituacaoMesa = 1
+                    },
+                    new Models.Mesa
+                    {
+                        Id = 2,
+                        NumeroMesa = 2,
+                        SituacaoMesa = 2
+                    },
+                    new Models.Mesa
+                    {
+                        Id = 3,
+                        NumeroMesa = 3,
+                        SituacaoMesa = 3
                     }
                 );
             modelBuilder.Entity<Models.Mesa>();
@@ -37,12 +49,29 @@ namespace Comandas.Api
                 .HasData(
                     new Models.CardapioItem
                     {
-                        Id = 3,
-                        Titulo = "",
-                        Descricao = "",
+                        Id = 1,
+                        Titulo = "a",
+                        Descricao = "a",
                         Preco = 10,
                         PossuiPreparo = true,
-                    };
+                    },
+                    new Models.CardapioItem
+                    {
+                        Id = 2,
+                        Titulo = "b",
+                        Descricao = "b",
+                        Preco = 10,
+                        PossuiPreparo = true,
+                    },
+                    new Models.CardapioItem
+                    {
+                        Id = 3,
+                        Titulo = "c",
+                        Descricao = "c",
+                        Preco = 10,
+                        PossuiPreparo = true,
+                    }
+                );
             modelBuilder.Entity<Models.CardapioItem>();
         }
 
