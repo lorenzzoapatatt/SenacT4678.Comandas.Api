@@ -2,28 +2,28 @@
 
 #nullable disable
 
+#pragma warning disable CA1814 // Prefer jagged arrays over multidimensional
+
 namespace Comandas.Api.Migrations
 {
     /// <inheritdoc />
-    public partial class version : Migration
+    public partial class Banco1 : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "CardapioItens",
+                name: "CategoriaCardapio",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
-                    Titulo = table.Column<string>(type: "TEXT", nullable: false),
-                    Descricao = table.Column<string>(type: "TEXT", nullable: false),
-                    Preco = table.Column<decimal>(type: "TEXT", nullable: false),
-                    PossuiPreparo = table.Column<bool>(type: "INTEGER", nullable: false)
+                    Nome = table.Column<string>(type: "TEXT", nullable: false),
+                    Descricao = table.Column<string>(type: "TEXT", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_CardapioItens", x => x.Id);
+                    table.PrimaryKey("PK_CategoriaCardapio", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -82,6 +82,28 @@ namespace Comandas.Api.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Usuarios", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "CardapioItens",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    Titulo = table.Column<string>(type: "TEXT", nullable: false),
+                    Descricao = table.Column<string>(type: "TEXT", nullable: false),
+                    Preco = table.Column<decimal>(type: "TEXT", nullable: false),
+                    PossuiPreparo = table.Column<bool>(type: "INTEGER", nullable: false),
+                    CategoriaCardapioId = table.Column<int>(type: "INTEGER", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_CardapioItens", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_CardapioItens_CategoriaCardapio_CategoriaCardapioId",
+                        column: x => x.CategoriaCardapioId,
+                        principalTable: "CategoriaCardapio",
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -149,6 +171,46 @@ namespace Comandas.Api.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.InsertData(
+                table: "CardapioItens",
+                columns: new[] { "Id", "CategoriaCardapioId", "Descricao", "PossuiPreparo", "Preco", "Titulo" },
+                values: new object[,]
+                {
+                    { 1, null, "a", true, 10m, "a" },
+                    { 2, null, "b", true, 10m, "b" },
+                    { 3, null, "c", true, 10m, "c" }
+                });
+
+            migrationBuilder.InsertData(
+                table: "CategoriaCardapio",
+                columns: new[] { "Id", "Descricao", "Nome" },
+                values: new object[,]
+                {
+                    { 1, null, "Lanches" },
+                    { 2, null, "Bebidas" },
+                    { 3, null, "Acompanhamentos" }
+                });
+
+            migrationBuilder.InsertData(
+                table: "Mesas",
+                columns: new[] { "Id", "NumeroMesa", "SituacaoMesa" },
+                values: new object[,]
+                {
+                    { 1, 1, 1 },
+                    { 2, 2, 2 },
+                    { 3, 3, 3 }
+                });
+
+            migrationBuilder.InsertData(
+                table: "Usuarios",
+                columns: new[] { "Id", "Email", "Nome", "Senha" },
+                values: new object[] { 1, "admin@admin.com", "Admin", "admin123" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_CardapioItens_CategoriaCardapioId",
+                table: "CardapioItens",
+                column: "CategoriaCardapioId");
+
             migrationBuilder.CreateIndex(
                 name: "IX_ComandaItens_ComandaId",
                 table: "ComandaItens",
@@ -187,6 +249,9 @@ namespace Comandas.Api.Migrations
 
             migrationBuilder.DropTable(
                 name: "Usuarios");
+
+            migrationBuilder.DropTable(
+                name: "CategoriaCardapio");
 
             migrationBuilder.DropTable(
                 name: "ComandaItens");
