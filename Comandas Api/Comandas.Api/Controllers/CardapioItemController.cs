@@ -53,13 +53,16 @@ namespace Comandas.Api.Controllers
                 Titulo = cardapio.Titulo,
                 Descricao = cardapio.Descricao,
                 Preco = cardapio.Preco,
-                PossuiPreparo = cardapio.PossuiPreparo
+                PossuiPreparo = cardapio.PossuiPreparo,
+                CategoriaCardapioId = cardapio.CategoriaCardapioId
             };
             //adiciona o cardapio na lista
             _context.CardapioItens.Add(cardapioItem);
             _context.SaveChanges();
             return Results.Created($"/api/cardapio/{cardapioItem.Id}", cardapioItem);
         }
+
+
 
         // PUT api/<CardapioItemController>/5
         [HttpPut("{id}")]
