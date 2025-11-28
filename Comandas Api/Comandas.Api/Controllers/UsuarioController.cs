@@ -54,6 +54,11 @@ namespace Comandas.Api.Controllers
             {
                 return Results.BadRequest("O email deve ser válido.");
             }
+            var emailExistente = _context.Usuarios.FirstOrDefault(u => u.Email == usuarioCreate.Email);
+            if (emailExistente is not null)
+            {
+                return Results.BadRequest("O email já está em uso.");
+            }
 
             var usuario = new Usuario
             {
@@ -104,6 +109,19 @@ namespace Comandas.Api.Controllers
                 return Results.NoContent();
             }
             return Results.StatusCode(500);
+        }
+
+        // criar metodo de login
+        [HttpPost("login")]
+        public IResult Login([FromBody] LoginRequest loginRequest)
+        {
+            var usuario = _context.Usuarios.FirstOrDefault(u => u.Email == loginRequest.Email && u.Senha == loginRequest.Senha);
+
+            //401
+            if (usuario is null)
+                return Results.Unauthorized();
+            //200
+            return Results.Ok("Usuario atendido");
         }
     }
 }
